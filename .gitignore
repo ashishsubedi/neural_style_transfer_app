@@ -2,6 +2,6 @@ __pycache__/
 .vscode/
 .env
 venv
-.rdb
+*.rdb
 uploads/
-
+*.h5
