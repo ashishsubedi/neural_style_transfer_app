@@ -10,7 +10,7 @@ Original file is located at
 # Commented out IPython magic to ensure Python compatibility.
 import numpy as np
 import tensorflow as tf
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import cv2
 
 import os
@@ -20,7 +20,9 @@ import time
 import PIL
 # %matplotlib inline
 
-MODEL_PATH = 'model/style_transfer.h5'
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
+MODEL_PATH = os.path.abspath('model/style_transfer.h5')
 
 n_C = 3
 IMAGE_WIDTH, IMAGE_HEIGHT = 600,600
@@ -39,7 +41,16 @@ beta = 1e8
 
 total_variation_weight=30
 opt = tf.optimizers.Adam(learning_rate=0.02, beta_1=0.99, epsilon=1e-1)
-model = tf.keras.models.load_model(MODEL_PATH)
+
+
+model = None
+
+def load_model():
+    global model
+    if model == None:
+        model = tf.keras.models.load_model(MODEL_PATH)
+        print('Model loaded')
+    return model
 
 
 def content_loss(c,g):
@@ -47,7 +58,7 @@ def content_loss(c,g):
 
 def gram_matrix(v):
   v = tf.reshape(v,[-1,n_C])
-  print(v.shape)
+  
   return K.dot(K.transpose(v),v)
 
 def Gram_Matrix(x):
@@ -64,7 +75,7 @@ def style_loss(s,g,w):
 def high_pass_x_y(image):
   x_var = image[:,:,1:,:] - image[:,:,:-1,:]
   y_var = image[:,1:,:,:] - image[:,:-1,:,:]
-  print(x_var.shape)
+  
   return x_var, y_var
 
 def total_variation_loss(image):
@@ -156,31 +167,36 @@ def tensor_to_image(tensor):
 
 
 
-
-
-
 def perform_transformation(content_image,style_image,output_name):
-
+  print("starting task")
+  
   global style_targets, content_targets
+  model=load_model()
   img,origi = load_and_preprocess(content_image)
   style_img,origi_style = load_and_preprocess(style_image)
 
   style_targets = model(style_img)[:num_style_layers]
   content_targets = model(img)[num_style_layers:]
   
+  print("targets generated")
+  
   g = generate_image()
   g_targets = model(g)
+  print('starting generation')
 
-  epochs = 5
-  steps_per_epoch = 100
+  epochs = 1
+  steps_per_epoch = 1
 
   step = 0
+  print("Starting")
 
   for n in range(epochs):
+    print(f"EPOCH:{n+1}")
     for m in range(steps_per_epoch):
       step += 1
       loss = train_step(img)
 
+  print("Complete")
   art = img.numpy().squeeze()
   art = art * 255.0
 
@@ -188,3 +204,4 @@ def perform_transformation(content_image,style_image,output_name):
   art = cv2.cvtColor(art,cv2.COLOR_RGB2BGR)
 
   cv2.imwrite(output_name,art)
+  return content_image, style_image,output_name
