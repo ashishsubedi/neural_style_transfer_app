@@ -27,8 +27,6 @@ def allowed_file(filename):
 
 @app.route('/')
 def index():
-    task = add.delay(1,2)
-    print(task,task.id)
     return render_template('index.html')
 
 @app.route('/upload/',methods=['POST'])
@@ -74,33 +72,20 @@ def check_status(id=None):
     res = simple_prediction.AsyncResult(id)
 
     if res.state == 'SUCCESS':
-        # content_image, style_image,output_name = res.result
-        return json.dumps({
+
+        return {
             'res' : res.result,
             'state': res.state
-        })
-        # return json.dumps(dict(
-        #     content=content_image,
-        #     style=style_image,
-        #     result=output_name,
-        #     stats=res.state
-        # ))
+        }
+  
 
     else:
-        return json.dumps(dict(
+        return dict(
 
-            stats=res.state
-        ))
+            state=res.state
+        )
 
     
-print("Calling task")
-@celery.task()
-def add(a, b):
-    return a + b
-# result = add.delay(23, 42)
-
-# result.wait()  # 65
-
 
 @celery.task()
 def simple_prediction(img):
