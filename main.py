@@ -49,16 +49,16 @@ def upload():
 
         task = apply_style_transfer.delay(content_path,style_path,output_path)
 
-        return json.dumps({
+        return {
             'status':'success',
             'code': 201,
             'message': f'Here is your id. Search for it later to get your image. {task}'
-        })
+        }
     else:
-        return json.dumps({
+        return {
             'status':'fail',
             'code': 501,
-        })
+        }
 
 @app.route('/status/<id>/',methods=['GET'])
 def check_status(id=None):
