@@ -7,7 +7,7 @@ Web app to asynchronously perform neural style transfer on given images.
 - Redis : As a task broker and result backend for the tasks
 - Tensorflow: For neural style transfer task
 
-#### Model link will be updated later.
+#### Model link : https://drive.google.com/drive/folders/1lmO6VzEnyExHWqAjmaLcSRbH9dOnNkIr?usp=sharing
 
 
 
