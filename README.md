@@ -5,7 +5,9 @@ Web app to asynchronously perform neural style transfer on given images.
 - Flask : Web framework
 - Celery: Distributed Task Queue
 - Redis : As a task broker and result backend for the tasks
-- Tensorflow: For neural style transfer
+- Tensorflow: For neural style transfer task
+
+#### Model link will be updated later.
 
 
 
